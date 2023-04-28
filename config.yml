@@ -1,8 +1,0 @@
-sql:
-  name: db
-  address: localhost:3306
-  user: root
-  password: root
-
-prometheus: 
-  endpoint: "http://prometheus:9090"
