@@ -30,7 +30,7 @@ type OpticsData struct {
 
 var (
 	configFile    = flag.String("config-file", "config.yml", "Path to config file")
-	logFile    = flag.String("log-file", "log.txt", "Path to config file")
+	logFile    = flag.String("log-file", "", "Path to config file")
 	cfg           *config.Config
 )
 
@@ -56,12 +56,17 @@ func main() {
 		log.Fatalf("Could not load config file. %v", err)
 	}
 
-	file, err := os.OpenFile(*logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-	if err != nil {
-		log.Fatal(err)
-	}
+	if *logFile != "" {
+
+		file, err := os.OpenFile(*logFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+
+		if err != nil {
+			log.Fatal(err)
+		}
 	
-	log.SetOutput(file)
+		log.SetOutput(file)
+
+	}
 
 	// Create a Prometheus API client
 	client, err := api.NewClient(api.Config{
@@ -108,9 +113,10 @@ func main() {
 		}
 	}
 
+	log.Printf("Retrieved Prometheus Data: %+v\n", data)
+
 	// Print the retrieved data
 	for _, d := range data {
-		log.Printf("Retrieved Record: %+v\n", d)
 		// Extract the target IP address and interface name
 
 		// Connect to the MySQL database
@@ -136,6 +142,8 @@ func main() {
 			log.Printf("%s",err)
 			panic(err)
 		}
+
+		log.Printf("Set light_level in sql db %+v\n", d.Value)
 
 
 	}
